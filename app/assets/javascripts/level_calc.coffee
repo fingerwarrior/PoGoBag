@@ -93,7 +93,7 @@ if !aMutationObserver
   usingMutations = false
 
 if usingMutations #if not, probably IE10 or below
-  mutationObserver = new MutationObserver((mut) ->
+  mutationObserver = new aMutationObserver((mut) ->
     startCalc()
     return
   )
@@ -103,7 +103,6 @@ if usingMutations #if not, probably IE10 or below
     characterData: true
 
 startCalc = ->
-  console.log 'called'
   pokemonNodes = document.getElementsByClassName('pokemon-card')
   iii = 0
   while iii < pokemonNodes.length
@@ -141,10 +140,13 @@ getLevel = (id, cp, atk, def, sta) ->
 $(document).on 'turbolinks:load', (event) ->
   startCalc()
   pokeCardContainer = document.getElementsByClassName('show-pokemon-container')[0]
-  if usingMutations
-    mutationObserver.observe pokeCardContainer, observerConfig
-  else
-    pokeCardContainer.addEventListener "DOMSubtreeModified", (ev)->
-      startCalc();
-      return
+  try
+    if usingMutations
+      mutationObserver.observe pokeCardContainer, observerConfig
+    else
+      pokeCardContainer.addEventListener "DOMSubtreeModified", (ev)->
+        startCalc();
+        return
+  catch e
+    return
   return
